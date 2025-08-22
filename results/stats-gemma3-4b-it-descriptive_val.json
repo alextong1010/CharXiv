@@ -1,0 +1,55 @@
+{
+    "Overall Score": 32.42,
+    "By Question": {
+        "Q1": 38.52,
+        "Q2": 67.83,
+        "Q3": 57.51,
+        "Q4": 65.76,
+        "Q5": 56.07,
+        "Q6": 52.61,
+        "Q7": 44.44,
+        "Q8": 8.93,
+        "Q9": 13.93,
+        "Q10": 23.29,
+        "Q11": 13.71,
+        "Q12": 0.0,
+        "Q13": 47.49,
+        "Q14": 7.45,
+        "Q15": 6.39,
+        "Q16": 2.78,
+        "Q17": 1.79,
+        "Q18": 48.18,
+        "Q19": 0.0
+    },
+    "By Category": {
+        "Information Extraction": 54.69,
+        "Enumeration": 15.58,
+        "Pattern Recognition": 31.44,
+        "Counting": 8.65,
+        "Compositionality": 1.79
+    },
+    "By Subplot": {
+        "1 Subplot": 40.67,
+        "2-4 Subplots": 30.56,
+        "5+ Subplots": 21.93
+    },
+    "By Subject": {
+        "Computer Science": 32.74,
+        "Economics": 32.97,
+        "Electrical Engineering and Systems Science": 37.82,
+        "Mathematics": 29.07,
+        "Physics": 30.12,
+        "Quantitative Biology": 29.17,
+        "Quantitative Finance": 38.36,
+        "Statistics": 29.87
+    },
+    "By Year": {
+        "2020": 33.81,
+        "2021": 29.89,
+        "2022": 35.04,
+        "2023": 31.15
+    },
+    "N_valid": 4000,
+    "N_invalid": 0,
+    "Question Type": "Descriptive"
+}
