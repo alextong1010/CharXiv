@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # input/output
     parser.add_argument('--data_dir', type=str, required=False, default="./data", \
                         help="Directory containing the input json files")
-    parser.add_argument('--image_dir', type=str, required=False, default="./images", \
+    parser.add_argument('--image_dir', type=str, required=False, default="/n/netscratch/ydu_lab/Lab/alex/Charxiv/images", \
                         help="Directory containing the images")
     parser.add_argument('--output_dir', type=str, required=False, default="./results", \
                         help="Directory to save the output json files")

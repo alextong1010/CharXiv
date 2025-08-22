@@ -3,6 +3,7 @@ from copy import deepcopy
 from constants import REASONING_RESP_INST, REASONING_GRADING_PREFIX, \
                 REASONING_GRADING_INST
 import os
+import time
 
 def get_reasoning_result_gpt(client, prompt, max_retries=10):
     curr_retries = 0
@@ -25,6 +26,38 @@ def get_reasoning_result_gpt(client, prompt, max_retries=10):
                 seed=42,
             ).choices[0].message.content
             content = json.loads(response)
+            ext, scr = content['extracted_answer'], content['score']
+            break
+        except Exception as e:
+            print(f"Error: {e}")
+            # increase the max_tokens if the response is too long
+            if 'Unterminated string starting at' in str(e):
+                if max_tokens >= 1024:
+                    print(f"Failed to get response for prompt: {prompt}")
+                    ext, scr = 'Failed to parse response', -1
+                    break
+                else:
+                    max_tokens = min(1024, max_tokens * 2) # double the max_tokens
+                    print(f"Retrying with max_tokens: {max_tokens}")
+            # otherwise, retry the request
+            curr_retries += 1
+    # if failed to get response, return dummy data
+    if curr_retries == max_retries:
+        print(f"Failed to get response for prompt: {prompt}")
+        ext, scr = 'Failed to parse response', -1
+    return ext, scr
+
+def get_reasoning_result_gemma(client, prompt, max_retries=20):
+    curr_retries = 0
+    max_tokens = 256
+    while curr_retries < max_retries:
+        try:
+            time.sleep(1)  # rate limiting
+            response = client.models.generate_content(
+                model="models/gemma-3-27b-it",
+                contents=[prompt],
+            )
+            content = json.loads(response.text)
             ext, scr = content['extracted_answer'], content['score']
             break
         except Exception as e:

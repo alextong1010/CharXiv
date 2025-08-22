@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 def generate_response_remote_wrapper(generate_fn, 
         queries, model_path, api_key, client, init_sleep=1, 
-        max_retries=10, sleep_factor=1.6):
+        max_retries=20, sleep_factor=1.6):
     for k in tqdm(queries):
         sleep_time = init_sleep
         query = queries[k]['question']
@@ -37,6 +37,10 @@ def get_client_fn(model_path):
                         'gemini-1.5-flash-001',
                         'gemini-1.5-pro-exp-0801']:
         from .gemini import get_client_model
+    elif model_path in ['models/gemma-3-4b-it',
+                        'models/gemma-3-12b-it',
+                        'models/gemma-3-27b-it']:
+        from .gemma3 import get_client_model    
     # gpt
     elif model_path in ['gpt-4o-2024-05-13', 
                         'gpt-4o-2024-08-06',
@@ -117,6 +121,10 @@ def get_generate_fn(model_path):
                         'gemini-1.5-flash-001',
                         'gemini-1.5-pro-exp-0801']:
         from .gemini import generate_response
+    elif model_name in ['gemma-3-4b-it',
+                        'gemma-3-12b-it',
+                        'gemma-3-27b-it']:
+        from .gemma3 import generate_response
     # gpt
     elif model_name in ['gpt-4o-2024-05-13', 
                         'gpt-4o-2024-08-06',

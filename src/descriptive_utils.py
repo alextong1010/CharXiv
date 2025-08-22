@@ -1,6 +1,9 @@
-import os, json
+import os, json, re
 from constants import DESCRIPTIVE_RESP_INST, DESCRIPTIVE_GRADING_PREFIX, \
             DESCRIPTIVE_GRADING_QMAP, DESCRIPTIVE_GRADING_ICL
+import time
+from pydantic import BaseModel
+
 
 def get_rubric(qid):
     instruction = None
@@ -63,6 +66,65 @@ def get_descriptive_result_gpt(client, prompt, length, max_retries=10):
         content = build_dummy_output(length)
     return content
 
+DEFAULT_OUTPUT = {
+    "extract_answer_T1": "",
+    "score_T1": 0,
+    "extract_answer_T2": "",
+    "score_T2": 0,
+    "extract_answer_T3": "",
+    "score_T3": 0,
+    "extract_answer_T4": "",
+    "score_T4": 0,
+    "extract_answer_T5": "",
+    "score_T5": 0,
+}
+
+def safe_load_json(text, default=None):
+    match = re.search(r"\{.*\}", text, re.S)
+    if not match:
+        return default if default is not None else {}
+    json_str = match.group(0)
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        return default if default is not None else {}
+
+def get_descriptive_result_gemma(client, prompt, length, max_retries=50):
+    curr_retries = 0
+    max_tokens = 256
+    while curr_retries < max_retries:
+        try:
+            time.sleep(2)  # rate limiting
+            response = client.models.generate_content(
+                model="gemma-3-27b-it",
+                contents=[prompt],
+                # config={
+                #     "response_mime_type": "application/json",
+                #     "response_schema": list[GradedOutput],
+                # },
+            )
+            content = safe_load_json(response.text, default=DEFAULT_OUTPUT)
+            verify_grading_output(content, length)
+            break
+        except Exception as e:
+            print(f"Error: {e}")
+            # increase the max_tokens if the response is too long
+            if 'Unterminated string starting at' in str(e):
+                if max_tokens >= 1024:
+                    print(f"Failed to get response for prompt: {prompt}")
+                    content = build_dummy_output(length)
+                    break
+                else:
+                    max_tokens = min(1024, max_tokens * 2) # double the max_tokens
+                    print(f"Retrying with max_tokens: {max_tokens}")
+            # otherwise, retry the request
+            curr_retries += 1
+    # if failed to get response, return dummy data
+    if curr_retries == max_retries:
+        print(f"Failed to get response for prompt: {prompt}")
+        content = build_dummy_output(length)
+    return content
+
 def build_json_keys(length):
     keys = []
     # specify the keys for gpt-4o's json response
@@ -83,7 +145,7 @@ def populate_grading_inputs(batch):
 def verify_grading_output(data, length_data):
     # check the integrity of keys and values
     for i in range(1, length_data+1):
-        assert f"extract_answer_T{i}" in data, f"extract_answer_T{i} is not found in {d}"
+        assert f"extract_answer_T{i}" in data, f"extract_answer_T{i} is not found in {data}"
         assert f"score_T{i}" in data, f"score_T{i} is not found in {data}"
         assert data[f"score_T{i}"] in [0, 1], f"score_T{i} is not in [0, 1]"
     return True
