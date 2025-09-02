@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+logs/
+DeepSeek-VL/
+
+
 # Distribution / packaging
 .Python
 build/

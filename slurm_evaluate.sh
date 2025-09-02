@@ -49,3 +49,6 @@ python src/evaluate.py \
     --api_key $OPENAI_KEY \
     --eval_model gpt-4o-mini \
     --parse_mode program_synthesis
+
+
+

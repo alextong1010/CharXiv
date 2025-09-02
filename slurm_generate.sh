@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=generate
 #SBATCH -c 4                               # 4 cores per task
-#SBATCH -t 03-00:00:00
+#SBATCH -t 00-12:00:00
 #SBATCH -o logs/output_%j.log
 #SBATCH -e logs/error_%j.log
-#SBATCH -p sapphire
+#SBATCH --gpus=1
+#SBATCH -p gpu_test
 
 #SBATCH --account=ydu_lab
 #SBATCH --mem=32GB
@@ -50,10 +51,32 @@ fi
 #     --parse_mode parse
 
 # Multiple keys
+# python src/generate.py \
+#     --model_name gemma3-27b-it \
+#     --split val \
+#     --mode descriptive \
+#     --model_path models/gemma-3-27b-it \
+#     --model_api $GEMINI_KEY $GEMINI_KEY2 \
+#     --parse_mode program_synthesis
+
 python src/generate.py \
-    --model_name gemma3-4b-it \
+    --model_name gpt-4o-mini-2024-07-18 \
     --split val \
     --mode descriptive \
-    --model_path models/gemma-3-4b-it \
-    --model_api $GEMINI_KEY $GEMINI_KEY2 \
-    --parse_mode program_synthesis
+    --model_path gpt-4o-mini-2024-07-18 \
+    --model_api $OPENAI_KEY \
+    --parse_mode qcond_parse
+
+# module load gcc/14.2.0-fasrc01
+# module load cuda/12.4.1-fasrc01
+# module load cudnn/9.5.1.17_cuda12-fasrc01 
+# export HF_HOME=/n/netscratch/ydu_lab/Lab/alex/.cache/huggingface
+# export CUDA_VISIBLE_DEVICES=0
+
+# python src/generate.py \
+#     --model_name deepseek-vl-7b-chat \
+#     --split val \
+#     --mode descriptive \
+#     --model_path deepseek-ai/deepseek-vl-7b-chat \
+#     --parse_mode parse
+    

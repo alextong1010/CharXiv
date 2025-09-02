@@ -6,7 +6,7 @@ import threading
 def process_queries_subset(generate_fn, queries_subset, model_path, api_key, client, 
                           init_sleep=1, max_retries=20, sleep_factor=1.6, parse_mode='default'):
     """Process a subset of queries sequentially"""
-    for k in tqdm(queries_subset, desc=f"Worker with API key ...{api_key}"):
+    for k in tqdm(queries_subset, desc=f"Processing queries"):
         sleep_time = init_sleep
         query = queries_subset[k]['question']
         image = queries_subset[k]["figure_path"]
